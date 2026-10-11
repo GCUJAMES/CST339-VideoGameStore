@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/common :: head('Login')}"></head>
+
+<body>
+    <header th:replace="~{layouts/common :: header}"></header>
+
+    <main class="container">
+        <section class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h1 class="h2 mb-3">Sign in to GameForge</h1>
+                        <p class="text-muted">Use <strong>gameforge</strong> and <strong>GameForge123</strong> for this simulated login.</p>
+
+                        <form th:action="@{/login}" th:object="${login}" method="post" novalidate>
+                            <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}" role="alert">
+                                <p class="mb-0" th:each="error : ${#fields.globalErrors()}" th:text="${error}">Invalid credentials.</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="username">Username</label>
+                                <input class="form-control" id="username" type="text" th:field="*{username}"
+                                       th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''"
+                                       autocomplete="username" autofocus>
+                                <div class="invalid-feedback" th:errors="*{username}">Username error</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label" for="password">Password</label>
+                                <input class="form-control" id="password" type="password" th:field="*{password}"
+                                       th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                                       autocomplete="current-password">
+                                <div class="invalid-feedback" th:errors="*{password}">Password error</div>
+                            </div>
+
+                            <button class="btn btn-primary w-100" type="submit">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{layouts/common :: footer}"></footer>
+</body>
+</html>

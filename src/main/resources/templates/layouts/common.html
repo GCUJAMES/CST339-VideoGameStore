@@ -32,12 +32,23 @@
                             <a class="nav-link" th:href="@{/}">Home</a>
                         </li>
 
-                        <li class="nav-item">
+                        <li class="nav-item" th:if="${session.loggedIn}">
+                            <a class="nav-link" th:href="@{/products}">Products</a>
+                        </li>
+
+                        <li class="nav-item" th:unless="${session.loggedIn}">
                             <a class="nav-link" th:href="@{/login}">Login</a>
                         </li>
 
-                        <li class="nav-item">
+                        <li class="nav-item" th:unless="${session.loggedIn}">
                             <a class="nav-link" th:href="@{/register}">Register</a>
+                        </li>
+
+                        <li class="nav-item d-flex align-items-center ms-lg-2" th:if="${session.loggedIn}">
+                            <span class="navbar-text me-2" th:text="${session.username}">gameforge</span>
+                            <form th:action="@{/logout}" method="post">
+                                <button class="btn btn-outline-light btn-sm" type="submit">Logout</button>
+                            </form>
                         </li>
                     </ul>
                 </div>
