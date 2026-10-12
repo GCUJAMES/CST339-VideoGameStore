@@ -32,6 +32,14 @@
                             <a class="nav-link" th:href="@{/}">Home</a>
                         </li>
 
+
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/login}">Login</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/register}">Register</a>
+
                         <li class="nav-item" th:if="${session.loggedIn}">
                             <a class="nav-link" th:href="@{/products}">Products</a>
                         </li>
@@ -49,6 +57,7 @@
                             <form th:action="@{/logout}" method="post">
                                 <button class="btn btn-outline-light btn-sm" type="submit">Logout</button>
                             </form>
+>>>>>>> refs/remotes/origin/main
                         </li>
                     </ul>
                 </div>

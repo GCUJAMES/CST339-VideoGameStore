@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/common :: head('Home')}"></head>
+
+<body>
+
+    <header th:replace="~{layouts/common :: header}"></header>
+
+    <main class="container">
+
+        <section class="text-center py-5">
+            <h1 class="display-4 fw-bold mb-3">
+                Welcome to GameForge
+            </h1>
+
+            <p class="lead mb-4">
+                Browse and manage video games across multiple platforms and categories.
+            </p>
+
+            <div>
+                <a class="btn btn-primary btn-lg me-2"
+                   th:href="@{/login}">
+                    Login
+                </a>
+
+                <a class="btn btn-outline-secondary btn-lg"
+                   th:href="@{/register}">
+                    Create an Account
+                </a>
+            </div>
+        </section>
+
+        <section class="py-5">
+            <h2 class="text-center mb-4">
+                Explore GameForge
+            </h2>
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title h4">Browse Games</h3>
+
+                            <p class="card-text">
+                                View video games across different platforms and categories.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title h4">Game Details</h3>
+
+                            <p class="card-text">
+                                View information such as price, platform, category and release date.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title h4">Manage Games</h3>
+
+                            <p class="card-text">
+                                Add, update and delete game records after logging in.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer th:replace="~{layouts/common :: footer}"></footer>
+
+</body>
+</html>
