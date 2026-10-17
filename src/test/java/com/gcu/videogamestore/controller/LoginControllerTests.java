@@ -1,6 +1,7 @@
 package com.gcu.videogamestore.controller;
 
 import com.gcu.videogamestore.model.Login;
+import com.gcu.videogamestore.service.LoginService;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.ExtendedModelMap;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.verify;
  */
 class LoginControllerTests {
 
-    private final LoginController loginController = new LoginController();
+    private final LoginController loginController = new LoginController(new LoginService());
     private final ProductController productController = new ProductController();
 
     @Test

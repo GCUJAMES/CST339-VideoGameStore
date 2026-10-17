@@ -1,6 +1,7 @@
 package com.gcu.videogamestore.controller;
 
 import com.gcu.videogamestore.model.Login;
+import com.gcu.videogamestore.service.LoginService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -17,8 +18,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class LoginController {
 
-    private static final String DEMO_USERNAME = "gameforge";
-    private static final String DEMO_PASSWORD = "GameForge123";
+    private final LoginService loginService;
+
+    /**
+     * Creates the controller with its login business service.
+     *
+     * @param loginService the injected service that evaluates simulated credentials
+     */
+    public LoginController(LoginService loginService) {
+        this.loginService = loginService;
+    }
 
     /**
      * Displays the login form.
@@ -50,14 +59,13 @@ public class LoginController {
             return "login";
         }
 
-        if (!DEMO_USERNAME.equalsIgnoreCase(login.getUsername().trim())
-                || !DEMO_PASSWORD.equals(login.getPassword())) {
+        if (!loginService.authenticate(login)) {
             bindingResult.reject("invalidCredentials", "Invalid username or password. Please try again.");
             return "login";
         }
 
         session.setAttribute("loggedIn", true);
-        session.setAttribute("username", DEMO_USERNAME);
+        session.setAttribute("username", loginService.getAuthenticatedUsername());
         return "redirect:/products";
     }
 
