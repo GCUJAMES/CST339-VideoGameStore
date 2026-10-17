@@ -2,20 +2,28 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{layouts/common :: head('Products')}"></head>
+	<body>
+	    <header th:replace="~{layouts/common :: header}"></header>
+	
+	    <main class="container">
+			<section class="py-4">
 
-<body>
-    <header th:replace="~{layouts/common :: header}"></header>
+			    <h1 class="display-6 fw-bold">Product Management</h1>
 
-    <main class="container">
-        <section class="py-4">
-            <h1 class="display-6 fw-bold">Product Management</h1>
-            <p class="lead">Welcome back, <span th:text="${username}">gameforge</span>.</p>
-            <div class="alert alert-success" role="status">
-                You are logged in. Product CRUD features will be added in later milestones.
-            </div>
-        </section>
-    </main>
+			    <p class="lead">
+			        Welcome back,
+			        <span th:text="${username}">gameforge</span>.
+			    </p>
 
-    <footer th:replace="~{layouts/common :: footer}"></footer>
-</body>
+			    <!-- Opens the Product Creation Module -->
+			    <a class="btn btn-primary mt-3"
+			       th:href="@{/products/create}">
+			        Create Product
+			    </a>
+
+			</section>
+	    </main>
+	
+	    <footer th:replace="~{layouts/common :: footer}"></footer>
+	</body>
 </html>
