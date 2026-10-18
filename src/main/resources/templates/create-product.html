@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{layouts/common :: head('Create Product')}"></head>
+<head th:replace="~{layouts/common :: head('Add Game')}"></head>
 
 <body>
 
@@ -15,20 +15,17 @@
             <div class="card shadow-sm">
                 <div class="card-body p-4">
 
-                    <h1 class="mb-4">Create Product</h1>
+                    <h1 class="mb-4">Add Game</h1>
 
-                    <!-- Displays a success message after valid submission -->
                     <div class="alert alert-success"
                          th:if="${successMessage}"
                          th:text="${successMessage}">
                     </div>
 
-                    <!-- Product creation form -->
                     <form th:action="@{/products/create}"
                           th:object="${product}"
                           method="post">
 
-                        <!-- Product title -->
                         <div class="mb-3">
                             <label class="form-label">Title</label>
 
@@ -42,7 +39,6 @@
                             </div>
                         </div>
 
-                        <!-- Product price -->
                         <div class="mb-3">
                             <label class="form-label">Price</label>
 
@@ -57,66 +53,63 @@
                             </div>
                         </div>
 
-						<!-- Platforms the game is available on -->
-						<div class="mb-3">
-						    <label class="form-label">Platforms</label>
+                        <div class="mb-3">
+                            <label class="form-label">Platforms</label>
 
-						    <div class="form-check">
-						        <input class="form-check-input"
-						               type="checkbox"
-						               th:field="*{platforms}"
-						               value="PlayStation"
-						               id="playstation">
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       th:field="*{platforms}"
+                                       value="PlayStation"
+                                       id="playstation">
 
-						        <label class="form-check-label" for="playstation">
-						            PlayStation
-						        </label>
-						    </div>
+                                <label class="form-check-label" for="playstation">
+                                    PlayStation
+                                </label>
+                            </div>
 
-						    <div class="form-check">
-						        <input class="form-check-input"
-						               type="checkbox"
-						               th:field="*{platforms}"
-						               value="Xbox"
-						               id="xbox">
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       th:field="*{platforms}"
+                                       value="Xbox"
+                                       id="xbox">
 
-						        <label class="form-check-label" for="xbox">
-						            Xbox
-						        </label>
-						    </div>
+                                <label class="form-check-label" for="xbox">
+                                    Xbox
+                                </label>
+                            </div>
 
-						    <div class="form-check">
-						        <input class="form-check-input"
-						               type="checkbox"
-						               th:field="*{platforms}"
-						               value="Nintendo Switch"
-						               id="switch">
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       th:field="*{platforms}"
+                                       value="Nintendo Switch"
+                                       id="switch">
 
-						        <label class="form-check-label" for="switch">
-						            Nintendo Switch
-						        </label>
-						    </div>
+                                <label class="form-check-label" for="switch">
+                                    Nintendo Switch
+                                </label>
+                            </div>
 
-						    <div class="form-check">
-						        <input class="form-check-input"
-						               type="checkbox"
-						               th:field="*{platforms}"
-						               value="PC"
-						               id="pc">
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       th:field="*{platforms}"
+                                       value="PC"
+                                       id="pc">
 
-						        <label class="form-check-label" for="pc">
-						            PC
-						        </label>
-						    </div>
+                                <label class="form-check-label" for="pc">
+                                    PC
+                                </label>
+                            </div>
 
-						    <!-- Validation message if no platform is selected -->
-						    <div class="text-danger"
-						         th:if="${#fields.hasErrors('platforms')}"
-						         th:errors="*{platforms}">
-						    </div>
-						</div>
+                            <div class="text-danger"
+                                 th:if="${#fields.hasErrors('platforms')}"
+                                 th:errors="*{platforms}">
+                            </div>
+                        </div>
 
-                        <!-- Product release date -->
                         <div class="mb-3">
                             <label class="form-label">Release Date</label>
 
@@ -130,7 +123,6 @@
                             </div>
                         </div>
 
-                        <!-- Product category -->
                         <div class="mb-3">
                             <label class="form-label">Category</label>
 
@@ -144,7 +136,6 @@
                             </div>
                         </div>
 
-                        <!-- Product description -->
                         <div class="mb-3">
                             <label class="form-label">Description</label>
 
@@ -159,10 +150,9 @@
                             </div>
                         </div>
 
-                        <!-- Form buttons -->
                         <button type="submit"
                                 class="btn btn-primary">
-                            Create Product
+                            Add Game
                         </button>
 
                         <a class="btn btn-secondary"

@@ -28,12 +28,17 @@
 
                 <div class="collapse navbar-collapse" id="mainNavbar">
                     <ul class="navbar-nav ms-auto">
+
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{/}">Home</a>
                         </li>
 
                         <li class="nav-item" th:if="${session.loggedIn}">
-                            <a class="nav-link" th:href="@{/products}">Products</a>
+                            <a class="nav-link" th:href="@{/products}">Games</a>
+                        </li>
+
+                        <li class="nav-item" th:if="${session.loggedIn}">
+                            <a class="nav-link" th:href="@{/products/create}">Add Game</a>
                         </li>
 
                         <li class="nav-item" th:unless="${session.loggedIn}">
@@ -44,20 +49,30 @@
                             <a class="nav-link" th:href="@{/register}">Register</a>
                         </li>
 
-                        <li class="nav-item d-flex align-items-center ms-lg-2" th:if="${session.loggedIn}">
-                            <span class="navbar-text me-2" th:text="${session.username}">gameforge</span>
+                        <li class="nav-item d-flex align-items-center ms-lg-2"
+                            th:if="${session.loggedIn}">
+
+                            <span class="navbar-text me-2"
+                                  th:text="${session.username}">
+                                gameforge
+                            </span>
+
                             <form th:action="@{/logout}" method="post">
-                                <button class="btn btn-outline-light btn-sm" type="submit">Logout</button>
+                                <button class="btn btn-outline-light btn-sm"
+                                        type="submit">
+                                    Logout
+                                </button>
                             </form>
 
                         </li>
+
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
 
-    <footer th:fragment="footer" class="mt-5">
+    <footer th:fragment="footer">
         <div class="container text-center py-4">
             <p class="mb-0">&copy; 2026 GameForge</p>
         </div>

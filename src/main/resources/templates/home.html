@@ -18,7 +18,7 @@
                 Browse and manage video games across multiple platforms and categories.
             </p>
 
-            <div>
+            <div th:unless="${session.loggedIn}">
                 <a class="btn btn-primary btn-lg me-2"
                    th:href="@{/login}">
                     Login
@@ -68,7 +68,7 @@
                             <h3 class="card-title h4">Manage Games</h3>
 
                             <p class="card-text">
-                                Add, update and delete game records after logging in.
+                                Create and manage game records after logging in.
                             </p>
                         </div>
                     </div>

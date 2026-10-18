@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{layouts/common :: head('Products')}"></head>
-	<body>
-	    <header th:replace="~{layouts/common :: header}"></header>
-	
-	    <main class="container">
-			<section class="py-4">
+<head th:replace="~{layouts/common :: head('Games')}"></head>
 
-			    <h1 class="display-6 fw-bold">Product Management</h1>
+<body>
 
-			    <p class="lead">
-			        Welcome back,
-			        <span th:text="${username}">gameforge</span>.
-			    </p>
+    <header th:replace="~{layouts/common :: header}"></header>
 
-			    <!-- Opens the Product Creation Module -->
-			    <a class="btn btn-primary mt-3"
-			       th:href="@{/products/create}">
-			        Create Product
-			    </a>
+    <main class="container">
 
-			</section>
-	    </main>
-	
-	    <footer th:replace="~{layouts/common :: footer}"></footer>
-	</body>
+        <section class="py-4">
+
+            <h1 class="display-6 fw-bold">Game Management</h1>
+
+            <p class="lead">
+                Welcome back,
+                <span th:text="${username}">gameforge</span>.
+            </p>
+
+            <a class="btn btn-primary mt-3"
+               th:href="@{/products/create}">
+                Add Game
+            </a>
+
+        </section>
+
+    </main>
+
+    <footer th:replace="~{layouts/common :: footer}"></footer>
+
+</body>
 </html>
