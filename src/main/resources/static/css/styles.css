@@ -2,6 +2,9 @@ body {
     min-height: 100vh;
     background-color: #f5f5f5;
     font-family: Arial, sans-serif;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .navbar-brand {
@@ -9,11 +12,12 @@ body {
 }
 
 main {
-    min-height: 75vh;
+    flex: 1;
     padding: 40px 0;
 }
 
 footer {
     background-color: #212529;
     color: white;
+    margin-top: auto;
 }
