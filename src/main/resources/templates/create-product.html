@@ -21,6 +21,12 @@
                          th:if="${successMessage}"
                          th:text="${successMessage}">
                     </div>
+					
+					<!-- Shows an error if the game could not be saved -->
+					<div class="alert alert-danger"
+					     th:if="${errorMessage}"
+					     th:text="${errorMessage}">
+					</div>
 
                     <form th:action="@{/products/create}"
                           th:object="${product}"

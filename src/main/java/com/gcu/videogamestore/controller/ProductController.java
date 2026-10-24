@@ -10,16 +10,22 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import com.gcu.videogamestore.service.ProductService;
 
-/**
- * Handles product-related pages for the GameForge application.
- */
+
+ // Handles product-related pages for the GameForge application.
 @Controller
 public class ProductController {
-
-    /**
-     * Displays the product landing page after the user logs in.
-     */
+	
+	// Used for product business logic
+	private final ProductService productService;
+	
+	// Constructor
+	public ProductController(ProductService productService) {
+	    this.productService = productService;
+	}
+ 
+     // Displays the product landing page after the user logs in.
     @GetMapping("/products")
     public String showProducts(HttpSession session, Model model) {
 
@@ -34,9 +40,8 @@ public class ProductController {
         return "products";
     }
 
-    /**
-     * Displays the Create Product form.
-     */
+    
+    //  Displays the Create Product form.    
     @GetMapping("/products/create")
     public String showCreateProduct(HttpSession session, Model model) {
 
@@ -51,9 +56,8 @@ public class ProductController {
         return "create-product";
     }
 
-    /**
-     * Processes the Create Product form and validates user input.
-     */
+    
+    // Processes the Create Product form and validates user input.
     @PostMapping("/products/create")
     public String createProduct(
             @Valid Product product,
@@ -71,12 +75,25 @@ public class ProductController {
             return "create-product";
         }
         
+	     // Saves the product to the database
+	     boolean created = productService.createProduct(product);
+	     
+	     // Shows an error if the product was not saved
+	     if (!created) {
+	         model.addAttribute(
+	                 "errorMessage",
+	                 "The game could not be added. Please try again."
+	         );
+
+	         return "create-product";
+	     }
+        
         // Clears the form
         model.addAttribute("product", new Product());
 
         // Database saving is not required for this milestone
         model.addAttribute("successMessage",
-                "Product created successfully. Database persistence will be added in a later milestone.");
+                "Game added successfully.");
 
         return "create-product";
     }
