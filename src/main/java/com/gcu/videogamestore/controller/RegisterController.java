@@ -35,6 +35,21 @@ public class RegisterController
 			return "register";
 		}
 
+		// duplicate checks before save
+		if (service.usernameExists(userModel.getUsername()))
+		{
+			bindingResult.rejectValue("username", "duplicate", "Username is already taken");
+		}
+		if (service.emailExists(userModel.getEmailAddress()))
+		{
+			bindingResult.rejectValue("emailAddress", "duplicate", "Email is already registered");
+		}
+		if (bindingResult.hasErrors())
+		{
+			model.addAttribute("title", "Register");
+			return "register";
+		}
+
 		if (!service.register(userModel))
 		{
 			model.addAttribute("title", "Register");
