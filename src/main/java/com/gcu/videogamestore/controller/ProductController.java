@@ -91,7 +91,7 @@ public class ProductController {
         // Clears the form
         model.addAttribute("product", new Product());
 
-        // Database saving is not required for this milestone
+        // Success message 
         model.addAttribute("successMessage",
                 "Game added successfully.");
 
