@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import com.gcu.videogamestore.service.ProductService;
 
 /**
  * Verifies the simulated Milestone 2 login behavior without a database.
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.verify;
 class LoginControllerTests {
 
     private final LoginController loginController = new LoginController(new LoginService());
-    private final ProductController productController = new ProductController();
+    private final ProductController productController = new ProductController(mock(ProductService.class));
 
     @Test
     void validCredentialsCreateLoggedInSessionAndRedirectToProducts() {
