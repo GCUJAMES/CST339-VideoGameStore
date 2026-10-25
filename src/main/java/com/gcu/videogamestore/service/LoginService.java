@@ -1,38 +1,49 @@
 package com.gcu.videogamestore.service;
 
+import com.gcu.videogamestore.entity.User;
 import com.gcu.videogamestore.model.Login;
+import com.gcu.videogamestore.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
- * Encapsulates the simulated login business rules for the current milestone.
- * Database-backed authentication is intentionally deferred to a later milestone.
+ * Encapsulates database-backed login business rules.
  */
 @Service
 public class LoginService {
 
-    private static final String DEMO_USERNAME = "gameforge";
-    private static final String DEMO_PASSWORD = "GameForge123";
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    /**
-     * Determines whether the submitted credentials match the simulated account.
-     *
-     * @param login submitted credentials
-     * @return true when the credentials represent the simulated GameForge account
-     */
-    public boolean authenticate(Login login) {
-        return login != null
-                && login.getUsername() != null
-                && login.getPassword() != null
-                && DEMO_USERNAME.equalsIgnoreCase(login.getUsername().trim())
-                && DEMO_PASSWORD.equals(login.getPassword());
+    public LoginService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
-     * Returns the username stored in session after a successful simulated login.
+     * Determines whether submitted credentials match a stored user.
      *
-     * @return the simulated account username
+     * @param login submitted credentials
+     * @return true when a matching stored user has the supplied password
      */
-    public String getAuthenticatedUsername() {
-        return DEMO_USERNAME;
+    public boolean authenticate(Login login) {
+        if (login == null || login.getUsername() == null || login.getPassword() == null) {
+            return false;
+        }
+
+        return userRepository.findByUsernameIgnoreCase(login.getUsername().trim())
+                .map(User::getPasswordHash)
+                .map(storedPasswordHash -> passwordEncoder.matches(login.getPassword(), storedPasswordHash))
+                .orElse(false);
+    }
+
+    /**
+     * Normalizes the authenticated username for storage in the browser session.
+     *
+     * @param login validated login credentials
+     * @return the username that was authenticated
+     */
+    public String getAuthenticatedUsername(Login login) {
+        return login.getUsername().trim();
     }
 }
