@@ -1,51 +1,111 @@
 package com.gcu.videogamestore.service;
 
-import com.gcu.videogamestore.entity.User;
-import com.gcu.videogamestore.model.Login;
-import com.gcu.videogamestore.repository.UserRepository;
-import org.junit.jupiter.api.Test;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+
+import com.gcu.videogamestore.data.entity.UserEntity;
+import com.gcu.videogamestore.data.repository.UserRepository;
+import com.gcu.videogamestore.model.Login;
+
 /**
- * Verifies database-backed credential business rules independently of MVC.
+ * Tests the database-backed login service.
  */
 class LoginServiceTests {
 
-    private final UserRepository userRepository = mock(UserRepository.class);
-    private final PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-    private final LoginService loginService = new LoginService(userRepository, passwordEncoder);
+    private final UserRepository userRepository =
+            mock(UserRepository.class);
+
+    private final LoginService loginService =
+            new LoginService(userRepository);
 
     @Test
-    void authenticatesAStoredAccountWithoutUsernameCaseSensitivity() {
-        User user = new User("gameforge", "stored-hash");
-        when(userRepository.findByUsernameIgnoreCase("GameForge")).thenReturn(java.util.Optional.of(user));
-        when(passwordEncoder.matches("GameForge123", "stored-hash")).thenReturn(true);
+    void authenticatesStoredUser() {
 
-        assertTrue(loginService.authenticate(login(" GameForge ", "GameForge123")));
-        assertEquals("GameForge", loginService.getAuthenticatedUsername(login(" GameForge ", "GameForge123")));
+        UserEntity user = new UserEntity(
+                "Game",
+                "Forge",
+                "gameforge@test.com",
+                "5551234567",
+                "gameforge",
+                "GameForge123"
+        );
+
+        when(userRepository.findByUsername("gameforge"))
+                .thenReturn(Optional.of(user));
+
+        assertTrue(
+                loginService.authenticate(
+                        login("gameforge", "GameForge123")
+                )
+        );
     }
 
     @Test
-    void rejectsIncorrectOrIncompleteCredentials() {
-        when(userRepository.findByUsernameIgnoreCase("gameforge"))
-                .thenReturn(java.util.Optional.of(new User("gameforge", "stored-hash")));
-        when(passwordEncoder.matches("wrong-password", "stored-hash")).thenReturn(false);
+    void rejectsIncorrectPassword() {
 
-        assertFalse(loginService.authenticate(login("gameforge", "wrong-password")));
-        assertFalse(loginService.authenticate(login(null, "GameForge123")));
+        UserEntity user = new UserEntity(
+                "Game",
+                "Forge",
+                "gameforge@test.com",
+                "5551234567",
+                "gameforge",
+                "GameForge123"
+        );
+
+        when(userRepository.findByUsername("gameforge"))
+                .thenReturn(Optional.of(user));
+
+        assertFalse(
+                loginService.authenticate(
+                        login("gameforge", "wrong-password")
+                )
+        );
+    }
+
+    @Test
+    void rejectsMissingUser() {
+
+        when(userRepository.findByUsername("missing"))
+                .thenReturn(Optional.empty());
+
+        assertFalse(
+                loginService.authenticate(
+                        login("missing", "password")
+                )
+        );
+    }
+
+    @Test
+    void rejectsIncompleteCredentials() {
+
+        assertFalse(
+                loginService.authenticate(
+                        login(null, "GameForge123")
+                )
+        );
+
+        assertFalse(
+                loginService.authenticate(
+                        login("gameforge", null)
+                )
+        );
+
         assertFalse(loginService.authenticate(null));
     }
 
     private Login login(String username, String password) {
+
         Login login = new Login();
+
         login.setUsername(username);
         login.setPassword(password);
+
         return login;
     }
 }

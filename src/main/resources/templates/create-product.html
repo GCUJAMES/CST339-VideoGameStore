@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layouts/common :: head('Add Game')}"></head>
+
+<body>
+
+<header th:replace="~{layouts/common :: header}"></header>
+
+<main class="container py-5">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+
+                    <h1 class="mb-4">Add Game</h1>
+
+                    <div class="alert alert-success"
+                         th:if="${successMessage}"
+                         th:text="${successMessage}">
+                    </div>
+					
+					<!-- Shows an error if the game could not be saved -->
+					<div class="alert alert-danger"
+					     th:if="${errorMessage}"
+					     th:text="${errorMessage}">
+					</div>
+
+                    <form th:action="@{/products/create}"
+                          th:object="${product}"
+                          method="post">
+
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{title}">
+
+                            <div class="text-danger"
+                                 th:if="${#fields.hasErrors('title')}"
+                                 th:errors="*{title}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Price</label>
+
+                            <input type="number"
+                                   step="0.01"
+                                   class="form-control"
+                                   th:field="*{price}">
+
+                            <div class="text-danger"
+                                 th:if="${#fields.hasErrors('price')}"
+                                 th:errors="*{price}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Platforms</label>
+
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       th:field="*{platforms}"
+                                       value="PlayStation"
+                                       id="playstation">
+
+                                <label class="form-check-label" for="playstation">
+                                    PlayStation
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       th:field="*{platforms}"
+                                       value="Xbox"
+                                       id="xbox">
+
+                                <label class="form-check-label" for="xbox">
+                                    Xbox
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       th:field="*{platforms}"
+                                       value="Nintendo Switch"
+                                       id="switch">
+
+                                <label class="form-check-label" for="switch">
+                                    Nintendo Switch
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       th:field="*{platforms}"
+                                       value="PC"
+                                       id="pc">
+
+                                <label class="form-check-label" for="pc">
+                                    PC
+                                </label>
+                            </div>
+
+                            <div class="text-danger"
+                                 th:if="${#fields.hasErrors('platforms')}"
+                                 th:errors="*{platforms}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Release Date</label>
+
+                            <input type="date"
+                                   class="form-control"
+                                   th:field="*{releaseDate}">
+
+                            <div class="text-danger"
+                                 th:if="${#fields.hasErrors('releaseDate')}"
+                                 th:errors="*{releaseDate}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{category}">
+
+                            <div class="text-danger"
+                                 th:if="${#fields.hasErrors('category')}"
+                                 th:errors="*{category}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+
+                            <textarea class="form-control"
+                                      rows="4"
+                                      th:field="*{description}">
+                            </textarea>
+
+                            <div class="text-danger"
+                                 th:if="${#fields.hasErrors('description')}"
+                                 th:errors="*{description}">
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+                            Add Game
+                        </button>
+
+                        <a class="btn btn-secondary"
+                           th:href="@{/products}">
+                            Cancel
+                        </a>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{layouts/common :: footer}"></footer>
+
+</body>
+</html>
