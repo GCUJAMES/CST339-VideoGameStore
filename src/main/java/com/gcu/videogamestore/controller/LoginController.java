@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 /**
- * Provides simulated login and logout behavior for Milestone 2.
- * Database-backed authentication is intentionally deferred to Milestone 6.
+ * Provides database-backed login and logout behavior.
  */
 @Controller
 public class LoginController {
@@ -23,7 +22,7 @@ public class LoginController {
     /**
      * Creates the controller with its login business service.
      *
-     * @param loginService the injected service that evaluates simulated credentials
+    * @param loginService the injected service that evaluates stored credentials
      */
     public LoginController(LoginService loginService) {
         this.loginService = loginService;
@@ -44,7 +43,7 @@ public class LoginController {
     }
 
     /**
-     * Validates credentials and records a successful simulated login in session.
+    * Validates credentials and records a successful login in session.
      *
      * @param login submitted credentials
      * @param bindingResult validation results for the submitted form
@@ -65,12 +64,12 @@ public class LoginController {
         }
 
         session.setAttribute("loggedIn", true);
-        session.setAttribute("username", loginService.getAuthenticatedUsername());
+        session.setAttribute("username", loginService.getAuthenticatedUsername(login));
         return "redirect:/products";
     }
 
     /**
-     * Clears the simulated authenticated session and returns to the home page.
+    * Clears the authenticated session and returns to the home page.
      *
      * @param session the current browser session
      * @return a redirect to the public home page

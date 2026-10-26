@@ -1,38 +1,46 @@
 package com.gcu.videogamestore.service;
 
-import com.gcu.videogamestore.model.Login;
 import org.springframework.stereotype.Service;
 
-/**
- * Encapsulates the simulated login business rules for the current milestone.
- * Database-backed authentication is intentionally deferred to a later milestone.
- */
+import com.gcu.videogamestore.data.entity.UserEntity;
+import com.gcu.videogamestore.data.repository.UserRepository;
+import com.gcu.videogamestore.model.Login;
+
 @Service
 public class LoginService {
 
-    private static final String DEMO_USERNAME = "gameforge";
-    private static final String DEMO_PASSWORD = "GameForge123";
+    // Used to access users from the database
+    private final UserRepository userRepository;
 
-    /**
-     * Determines whether the submitted credentials match the simulated account.
-     *
-     * @param login submitted credentials
-     * @return true when the credentials represent the simulated GameForge account
-     */
-    public boolean authenticate(Login login) {
-        return login != null
-                && login.getUsername() != null
-                && login.getPassword() != null
-                && DEMO_USERNAME.equalsIgnoreCase(login.getUsername().trim())
-                && DEMO_PASSWORD.equals(login.getPassword());
+    public LoginService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    /**
-     * Returns the username stored in session after a successful simulated login.
-     *
-     * @return the simulated account username
-     */
-    public String getAuthenticatedUsername() {
-        return DEMO_USERNAME;
+    // Checks the username and password against the database
+    public boolean authenticate(Login login) {
+
+        if (login == null ||
+                login.getUsername() == null ||
+                login.getPassword() == null) {
+
+            return false;
+        }
+
+        // Looks for the username in the database
+        UserEntity user = userRepository
+                .findByUsername(login.getUsername().trim())
+                .orElse(null);
+
+        if (user == null) {
+            return false;
+        }
+
+        // Checks if the entered password matches
+        return user.getPassword().equals(login.getPassword());
+    }
+
+    // Returns the username for the current session
+    public String getAuthenticatedUsername(Login login) {
+        return login.getUsername().trim();
     }
 }
