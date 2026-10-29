@@ -23,6 +23,81 @@
                 Add Game
             </a>
 
+            <hr class="my-4">
+
+            <!-- Shows a message if there are no games -->
+            <div th:if="${#lists.isEmpty(products)}"
+                 class="alert alert-info">
+                No games have been added yet.
+            </div>
+
+            <!-- Displays all games from the database -->
+            <div th:if="${!#lists.isEmpty(products)}"
+                 class="row">
+
+                <div class="col-md-6 mb-4"
+                     th:each="product : ${products}">
+
+                    <div class="card h-100">
+
+                        <div class="card-body">
+
+                            <h4 class="card-title"
+                                th:text="${product.title}">
+                                Game Title
+                            </h4>
+
+                            <p>
+                                <strong>Price:</strong>
+                                $<span th:text="${product.price}"></span>
+                            </p>
+
+                            <p>
+                                <strong>Release Date:</strong>
+                                <span th:text="${product.releaseDate}"></span>
+                            </p>
+
+                            <p>
+                                <strong>Category:</strong>
+                                <span th:text="${product.category}"></span>
+                            </p>
+
+                            <p>
+                                <strong>Description:</strong>
+                                <span th:text="${product.description}"></span>
+                            </p>
+
+                            <p>
+                                <strong>Platforms:</strong>
+
+                                <span th:each="platform, stat : ${product.platforms}">
+                                    <span th:text="${platform}"></span>
+                                    <span th:if="${!stat.last}">, </span>
+                                </span>
+                            </p>
+							
+							<div class="mt-3">
+
+							    <a class="btn btn-warning btn-sm"
+							       th:href="@{/products/edit/{id}(id=${product.productId})}">
+							        Edit
+							    </a>
+
+							    <a class="btn btn-danger btn-sm"
+							       th:href="@{/products/delete/{id}(id=${product.productId})}">
+							        Delete
+							    </a>
+
+							</div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </section>
 
     </main>
