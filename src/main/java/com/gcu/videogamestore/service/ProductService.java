@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import com.gcu.videogamestore.data.GameDataService;
 import com.gcu.videogamestore.model.Product;
 
+import java.util.List;
+
 @Service
 public class ProductService {
 
@@ -18,5 +20,10 @@ public class ProductService {
     // Sends the product to the data service to be saved
     public boolean createProduct(Product product) {
         return gameDataService.createGame(product);
+    }
+    
+ 	// Gets all games from the database
+    public List<Product> getAllGames() {
+        return gameDataService.getAllGames();
     }
 }

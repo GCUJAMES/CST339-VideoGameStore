@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import java.util.List;
 
 @Repository
 public class GameDataService {
@@ -93,5 +94,54 @@ public class GameDataService {
                     platformId
             );
         }
+    }
+    
+    // Gets all games from the database
+    public List<Product> getAllGames() {
+
+        String sql = """
+                SELECT game_id, title, price, release_date, description, category
+                FROM games
+                ORDER BY game_id
+                """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+
+            Product product = new Product();
+
+            product.setProductId(rs.getInt("game_id"));
+            product.setTitle(rs.getString("title"));
+            product.setPrice(rs.getBigDecimal("price"));
+            product.setReleaseDate(
+                    rs.getDate("release_date").toLocalDate());
+            product.setDescription(rs.getString("description"));
+            product.setCategory(rs.getString("category"));
+            
+            // Gets the platforms connected to this game
+            product.setPlatforms(
+                    getPlatformsForGame(product.getProductId())
+            );
+
+            return product;
+        });
+    }
+    
+    // Gets the platforms for one game
+    private List<String> getPlatformsForGame(int gameId) {
+
+        String sql = """
+                SELECT p.platform_name
+                FROM platforms p
+                JOIN game_platforms gp
+                    ON p.platform_id = gp.platform_id
+                WHERE gp.game_id = ?
+                ORDER BY p.platform_id
+                """;
+
+        return jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> rs.getString("platform_name"),
+                gameId
+        );
     }
 }

@@ -34,14 +34,17 @@ public class ProductController {
             return "redirect:/login";
         }
 
-        // Send the username to the products page
+        // Send the user name to the products page
         model.addAttribute("username", session.getAttribute("username"));
+        
+        // Gets all games from the database
+        model.addAttribute("products", productService.getAllGames());
 
         return "products";
     }
 
     
-    //  Displays the Create Product form.    
+    // Displays the Create Product form.    
     @GetMapping("/products/create")
     public String showCreateProduct(HttpSession session, Model model) {
 
