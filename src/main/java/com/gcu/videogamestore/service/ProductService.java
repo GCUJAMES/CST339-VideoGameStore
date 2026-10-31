@@ -26,4 +26,9 @@ public class ProductService {
     public List<Product> getAllGames() {
         return gameDataService.getAllGames();
     }
+    
+    // Calls the data service method to remove a game from the database
+    public boolean deleteProduct(int gameId) {
+        return gameDataService.deleteGame(gameId);
+    }
 }
