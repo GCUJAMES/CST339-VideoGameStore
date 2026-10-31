@@ -9,7 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.gcu.videogamestore.service.ProductService;
 
 
@@ -99,5 +102,23 @@ public class ProductController {
                 "Game added successfully.");
 
         return "create-product";
+    }
+    
+    // Deletes a game by its game_id
+    @PostMapping("/products/delete/{id}")
+    public String deleteProduct(@PathVariable("id") int id,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+
+        if (!Boolean.TRUE.equals(session.getAttribute("loggedIn"))) {
+            return "redirect:/login";
+        }
+
+        if (productService.deleteProduct(id)) {
+            redirectAttributes.addFlashAttribute("successMessage", "Game deleted successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "The game could not be deleted.");
+        }
+        return "redirect:/products";
     }
 }
