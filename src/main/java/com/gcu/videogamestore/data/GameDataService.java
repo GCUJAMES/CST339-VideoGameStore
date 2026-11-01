@@ -144,4 +144,9 @@ public class GameDataService {
                 gameId
         );
     }
+    
+    // Deletes a game and ensures game_platforms rows are removed by ON DELETE CASCADE
+    public boolean deleteGame(int gameId) {
+        return jdbcTemplate.update("DELETE FROM games WHERE game_id = ?", gameId) > 0;
+    }
 }
