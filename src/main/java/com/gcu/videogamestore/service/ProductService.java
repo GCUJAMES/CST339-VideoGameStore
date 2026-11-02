@@ -26,4 +26,12 @@ public class ProductService {
     public List<Product> getAllGames() {
         return gameDataService.getAllGames();
     }
+
+    public Product getGameById(int gameId) {
+        return gameDataService.getGameById(gameId);
+    }
+
+    public boolean updateProduct(Product product) {
+        return gameDataService.updateGame(product);
+    }
 }
