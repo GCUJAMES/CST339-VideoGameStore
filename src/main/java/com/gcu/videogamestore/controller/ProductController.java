@@ -103,22 +103,79 @@ public class ProductController {
 
         return "create-product";
     }
-    
-    // Deletes a game by its game_id
-    @PostMapping("/products/delete/{id}")
-    public String deleteProduct(@PathVariable("id") int id,
-                                HttpSession session,
-                                RedirectAttributes redirectAttributes) {
+    // Shows the Edit Game page
+    @GetMapping("/products/edit/{id}")
+    public String showEditProduct(
+            @PathVariable int id,
+            HttpSession session,
+            Model model) {
 
         if (!Boolean.TRUE.equals(session.getAttribute("loggedIn"))) {
             return "redirect:/login";
         }
 
-        if (productService.deleteProduct(id)) {
-            redirectAttributes.addFlashAttribute("successMessage", "Game deleted successfully.");
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "The game could not be deleted.");
+        Product product = productService.getGameById(id);
+
+        if (product == null) {
+            return "redirect:/products";
         }
-        return "redirect:/products";
+
+        model.addAttribute("product", product);
+
+        return "edit-product";
     }
+
+// Deletes a game by its game id
+@PostMapping("/products/delete/{id}")
+public String deleteProduct(
+        @PathVariable("id") int id,
+        HttpSession session,
+        RedirectAttributes redirectAttributes) {
+
+    if (!Boolean.TRUE.equals(session.getAttribute("loggedIn"))) {
+        return "redirect:/login";
+    }
+
+    if (productService.deleteProduct(id)) {
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                "Game deleted successfully."
+        );
+    } else {
+        redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                "The game could not be deleted."
+        );
+    }
+
+    return "redirect:/products";
+}
+        
+
+@PostMapping("/products/edit")
+public String updateProduct(
+        @Valid Product product,
+        BindingResult bindingResult,
+        HttpSession session,
+        Model model) {
+
+    if (!Boolean.TRUE.equals(session.getAttribute("loggedIn"))) {
+        return "redirect:/login";
+    }
+
+    if (bindingResult.hasErrors()) {
+        return "edit-product";
+    }
+
+    if (!productService.updateProduct(product)) {
+        model.addAttribute(
+                "errorMessage",
+                "The game could not be updated. Please try again."
+        );
+
+        return "edit-product";
+    }
+
+    return "redirect:/products";
+}
 }

@@ -9,6 +9,7 @@ import java.sql.Statement;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class GameDataService {
@@ -124,6 +125,59 @@ public class GameDataService {
 
             return product;
         });
+    }
+
+    // Gets one game and its platforms for the Edit Game form.
+    public Product getGameById(int gameId) {
+
+        String sql = """
+                SELECT game_id, title, price, release_date, description, category
+                FROM games
+                WHERE game_id = ?
+                """;
+
+        List<Product> products = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Product product = new Product();
+            product.setProductId(rs.getInt("game_id"));
+            product.setTitle(rs.getString("title"));
+            product.setPrice(rs.getBigDecimal("price"));
+            product.setReleaseDate(rs.getDate("release_date").toLocalDate());
+            product.setDescription(rs.getString("description"));
+            product.setCategory(rs.getString("category"));
+            product.setPlatforms(getPlatformsForGame(product.getProductId()));
+            return product;
+        }, gameId);
+
+        return products.isEmpty() ? null : products.get(0);
+    }
+
+    // Updates game details and replaces the selected platform relationships.
+    @Transactional
+    public boolean updateGame(Product product) {
+
+        String updateGameSql = """
+                UPDATE games
+                SET title = ?, price = ?, release_date = ?, description = ?, category = ?
+                WHERE game_id = ?
+                """;
+
+        int rows = jdbcTemplate.update(
+                updateGameSql,
+                product.getTitle(),
+                product.getPrice(),
+                Date.valueOf(product.getReleaseDate()),
+                product.getDescription(),
+                product.getCategory(),
+                product.getProductId()
+        );
+
+        if (rows == 0) {
+            return false;
+        }
+
+        jdbcTemplate.update("DELETE FROM game_platforms WHERE game_id = ?", product.getProductId());
+        savePlatforms(product.getProductId(), product);
+        return true;
     }
     
     // Gets the platforms for one game
