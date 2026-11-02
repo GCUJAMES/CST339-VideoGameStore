@@ -24,6 +24,8 @@
             </a>
 
             <hr class="my-4">
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+			<div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
             <!-- Shows a message if there are no games -->
             <div th:if="${#lists.isEmpty(products)}"
@@ -83,11 +85,12 @@
 							        Edit
 							    </a>
 
-							    <a class="btn btn-danger btn-sm"
-							       th:href="@{/products/delete/{id}(id=${product.productId})}">
-							        Delete
-							    </a>
-
+							    <form class="d-inline"
+								      th:action="@{/products/delete/{id}(id=${product.productId})}"
+								      method="post"
+								      onsubmit="return confirm('Delete this game? This cannot be undone.');">
+								    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+								</form>
 							</div>
 
                         </div>

@@ -26,12 +26,17 @@ public class ProductService {
     public List<Product> getAllGames() {
         return gameDataService.getAllGames();
     }
+      public Product getGameById(int gameId) {
+          return gameDataService.getGameById(gameId);
+      }
 
-    public Product getGameById(int gameId) {
-        return gameDataService.getGameById(gameId);
-    }
+      public boolean updateProduct(Product product) {
+          return gameDataService.updateGame(product);
+      }
 
-    public boolean updateProduct(Product product) {
-        return gameDataService.updateGame(product);
+      // Calls the data service method to remove a game from the database
+      public boolean deleteProduct(int gameId) {
+          return gameDataService.deleteGame(gameId);
+      }
     }
 }
