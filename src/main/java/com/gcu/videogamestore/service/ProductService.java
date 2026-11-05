@@ -38,5 +38,4 @@ public class ProductService {
       public boolean deleteProduct(int gameId) {
           return gameDataService.deleteGame(gameId);
       }
-    }
 }
