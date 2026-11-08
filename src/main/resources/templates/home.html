@@ -18,7 +18,7 @@
                 Browse and manage video games across multiple platforms and categories.
             </p>
 
-            <div th:unless="${session.loggedIn}">
+            <div th:if="${currentUsername == null}">
                 <a class="btn btn-primary btn-lg me-2"
                    th:href="@{/login}">
                     Login
