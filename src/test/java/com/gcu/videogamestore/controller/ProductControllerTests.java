@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.gcu.videogamestore.model.Product;
 import com.gcu.videogamestore.service.ProductService;
-import jakarta.servlet.http.HttpSession;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.ExtendedModelMap;
@@ -19,14 +19,11 @@ class ProductControllerTests {
 
     private ProductService productService;
     private ProductController controller;
-    private HttpSession loggedInSession;
 
     @BeforeEach
     void setUp() {
         productService = mock(ProductService.class);
         controller = new ProductController(productService);
-        loggedInSession = mock(HttpSession.class);
-        when(loggedInSession.getAttribute("loggedIn")).thenReturn(true);
     }
 
     @Test
@@ -36,7 +33,7 @@ class ProductControllerTests {
         when(productService.getGameById(7)).thenReturn(product);
         ExtendedModelMap model = new ExtendedModelMap();
 
-        assertEquals("edit-product", controller.showEditProduct(7, loggedInSession, model));
+        assertEquals("edit-product", controller.showEditProduct(7, model));
         assertSame(product, model.getAttribute("product"));
     }
 
@@ -44,7 +41,10 @@ class ProductControllerTests {
     void showEditProductRedirectsWhenGameDoesNotExist() {
         when(productService.getGameById(7)).thenReturn(null);
 
-        assertEquals("redirect:/products", controller.showEditProduct(7, loggedInSession, new ExtendedModelMap()));
+        assertEquals(
+                "redirect:/products",
+                controller.showEditProduct(7, new ExtendedModelMap())
+        );
     }
 
     @Test
@@ -55,7 +55,11 @@ class ProductControllerTests {
 
         assertEquals(
                 "redirect:/products",
-                controller.updateProduct(product, new BeanPropertyBindingResult(product, "product"), loggedInSession, new ExtendedModelMap())
+                controller.updateProduct(
+                        product,
+                        new BeanPropertyBindingResult(product, "product"),
+                        new ExtendedModelMap()
+                )
         );
         verify(productService).updateProduct(product);
     }
@@ -63,10 +67,14 @@ class ProductControllerTests {
     @Test
     void updateProductKeepsTheEditFormOpenForValidationErrors() {
         Product product = new Product();
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(product, "product");
+        BeanPropertyBindingResult bindingResult =
+                new BeanPropertyBindingResult(product, "product");
         bindingResult.rejectValue("title", "NotBlank", "Title is required.");
 
-        assertEquals("edit-product", controller.updateProduct(product, bindingResult, loggedInSession, new ExtendedModelMap()));
+        assertEquals(
+                "edit-product",
+                controller.updateProduct(product, bindingResult, new ExtendedModelMap())
+        );
         verify(productService, never()).updateProduct(product);
     }
 }
