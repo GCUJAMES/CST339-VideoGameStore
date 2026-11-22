@@ -69,7 +69,7 @@ public class LoginController {
     }
 
     /**
-    * Clears the authenticated session and returns to the home page.
+     * Clears the authenticated session and returns to the home page.
      *
      * @param session the current browser session
      * @return a redirect to the public home page

@@ -1,6 +1,7 @@
 package com.gcu.videogamestore.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.gcu.videogamestore.data.entity.UserEntity;
 import com.gcu.videogamestore.data.repository.UserRepository;
@@ -11,9 +12,11 @@ public class LoginService {
 
     // Used to access users from the database
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public LoginService(UserRepository userRepository) {
+    public LoginService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // Checks the username and password against the database
@@ -36,7 +39,7 @@ public class LoginService {
         }
 
         // Checks if the entered password matches
-        return user.getPassword().equals(login.getPassword());
+        return passwordEncoder.matches(login.getPassword(), user.getPassword());
     }
 
     // Returns the username for the current session

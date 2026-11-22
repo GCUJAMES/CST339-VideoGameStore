@@ -9,6 +9,8 @@ import com.gcu.videogamestore.service.ProductService;
 import jakarta.servlet.http.HttpSession;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
 
@@ -28,8 +30,11 @@ class LoginControllerTests {
     private final UserRepository userRepository =
             mock(UserRepository.class);
 
+    private final PasswordEncoder passwordEncoder =
+            new BCryptPasswordEncoder();
+
     private final LoginController loginController =
-            new LoginController(new LoginService(userRepository));
+            new LoginController(new LoginService(userRepository, passwordEncoder));
 
     private final ProductController productController =
             new ProductController(mock(ProductService.class));
@@ -52,7 +57,7 @@ class LoginControllerTests {
                 "test@email.com",
                 "5551234567",
                 "gameforge",
-                "GameForge123"
+                passwordEncoder.encode("GameForge123")
         );
 
         // Returns the stored user from the database
@@ -89,7 +94,7 @@ class LoginControllerTests {
                 "test@email.com",
                 "5551234567",
                 "gameforge",
-                "GameForge123"
+                passwordEncoder.encode("GameForge123")
         );
 
         when(userRepository.findByUsername("gameforge"))

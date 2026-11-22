@@ -1,6 +1,5 @@
 package com.gcu.videogamestore.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,8 +14,12 @@ import jakarta.validation.Valid;
 @Controller
 public class RegisterController
 {
-	@Autowired
-	private RegistrationBusinessInterface service;
+	private final RegistrationBusinessInterface service;
+
+	public RegisterController(RegistrationBusinessInterface service)
+	{
+		this.service = service;
+	}
 
 	@GetMapping("/register")
 	public String register(Model model)

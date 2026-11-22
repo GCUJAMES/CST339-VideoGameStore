@@ -6,9 +6,12 @@ import com.gcu.videogamestore.model.Product;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import java.util.List;
+import java.util.Map;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
@@ -106,7 +109,7 @@ public class GameDataService {
                 ORDER BY game_id
                 """;
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+        List<Product> products = jdbcTemplate.query(sql, (rs, rowNum) -> {
 
             Product product = new Product();
 
@@ -117,14 +120,43 @@ public class GameDataService {
                     rs.getDate("release_date").toLocalDate());
             product.setDescription(rs.getString("description"));
             product.setCategory(rs.getString("category"));
-            
-            // Gets the platforms connected to this game
-            product.setPlatforms(
-                    getPlatformsForGame(product.getProductId())
-            );
 
             return product;
         });
+
+        if (products.isEmpty()) {
+            return products;
+        }
+
+        String platformSql = """
+                SELECT gp.game_id, p.platform_name
+                FROM game_platforms gp
+                JOIN platforms p
+                    ON p.platform_id = gp.platform_id
+                ORDER BY gp.game_id, p.platform_id
+                """;
+
+        List<Map.Entry<Integer, String>> platformRows = jdbcTemplate.query(
+                platformSql,
+                (rs, rowNum) -> Map.entry(
+                        rs.getInt("game_id"),
+                        rs.getString("platform_name"))
+        );
+
+        Map<Integer, List<String>> platformsByGameId = new HashMap<>();
+        for (Map.Entry<Integer, String> platformRow : platformRows) {
+            platformsByGameId
+                    .computeIfAbsent(platformRow.getKey(), key -> new ArrayList<>())
+                    .add(platformRow.getValue());
+        }
+
+        for (Product product : products) {
+            product.setPlatforms(
+                    platformsByGameId.getOrDefault(product.getProductId(), List.of())
+            );
+        }
+
+        return products;
     }
 
     // Gets one game and its platforms for the Edit Game form.

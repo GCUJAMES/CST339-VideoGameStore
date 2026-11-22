@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ class GameRestControllerSecurityTests {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @MockitoBean
     private ProductService productService;
@@ -71,7 +75,7 @@ class GameRestControllerSecurityTests {
     private void configureAuthenticatedUser() {
         when(databaseUserDetailsService.loadUserByUsername("gameforge"))
                 .thenReturn(User.withUsername("gameforge")
-                        .password("password")
+                    .password(passwordEncoder.encode("password"))
                         .roles("USER")
                         .build());
     }

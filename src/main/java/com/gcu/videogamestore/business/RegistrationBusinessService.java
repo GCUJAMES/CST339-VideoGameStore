@@ -1,7 +1,9 @@
 package com.gcu.videogamestore.business;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.gcu.videogamestore.data.entity.UserEntity;
 import com.gcu.videogamestore.data.repository.UserRepository;
@@ -9,8 +11,16 @@ import com.gcu.videogamestore.model.UserModel;
 
 public class RegistrationBusinessService implements RegistrationBusinessInterface
 {
-	@Autowired
-	private UserRepository userRepository;
+	private static final Logger logger = LoggerFactory.getLogger(RegistrationBusinessService.class);
+
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+
+	public RegistrationBusinessService(UserRepository userRepository, PasswordEncoder passwordEncoder)
+	{
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	@Override
 	public boolean register(UserModel user)
@@ -29,7 +39,7 @@ public class RegistrationBusinessService implements RegistrationBusinessInterfac
 				user.getEmailAddress(),
 				user.getPhoneNumber(),
 				user.getUsername(),
-				user.getPassword()
+				passwordEncoder.encode(user.getPassword())
 			);
 
 			userRepository.save(entity);
@@ -41,7 +51,7 @@ public class RegistrationBusinessService implements RegistrationBusinessInterfac
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Unable to register user {}", user.getUsername(), e);
 			return false;
 		}
 	}

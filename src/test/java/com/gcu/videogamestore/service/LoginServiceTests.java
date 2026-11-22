@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.gcu.videogamestore.data.entity.UserEntity;
 import com.gcu.videogamestore.data.repository.UserRepository;
@@ -21,8 +23,11 @@ class LoginServiceTests {
     private final UserRepository userRepository =
             mock(UserRepository.class);
 
+    private final PasswordEncoder passwordEncoder =
+            new BCryptPasswordEncoder();
+
     private final LoginService loginService =
-            new LoginService(userRepository);
+            new LoginService(userRepository, passwordEncoder);
 
     @Test
     void authenticatesStoredUser() {
@@ -33,7 +38,7 @@ class LoginServiceTests {
                 "gameforge@test.com",
                 "5551234567",
                 "gameforge",
-                "GameForge123"
+                passwordEncoder.encode("GameForge123")
         );
 
         when(userRepository.findByUsername("gameforge"))
@@ -55,7 +60,7 @@ class LoginServiceTests {
                 "gameforge@test.com",
                 "5551234567",
                 "gameforge",
-                "GameForge123"
+                passwordEncoder.encode("GameForge123")
         );
 
         when(userRepository.findByUsername("gameforge"))
