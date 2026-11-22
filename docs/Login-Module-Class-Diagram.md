@@ -5,19 +5,12 @@ This diagram documents the final database-backed authentication design. New pass
 ```mermaid
 classDiagram
     class LoginController {
-        -LoginService loginService
-        +LoginController(LoginService loginService)
         +showLoginForm(Model model) String
-        +processLogin(Login login, BindingResult bindingResult, HttpSession session) String
-        +logout(HttpSession session) String
     }
 
-    class LoginService {
-        -UserRepository userRepository
-        -PasswordEncoder passwordEncoder
-        +LoginService(UserRepository, PasswordEncoder)
-        +authenticate(Login login) boolean
-        +getAuthenticatedUsername(Login login) String
+    class SecurityConfig {
+        +passwordEncoder() PasswordEncoder
+        +securityFilterChain(HttpSecurity, DatabaseUserDetailsService) SecurityFilterChain
     }
 
     class RegistrationBusinessService {
@@ -67,23 +60,21 @@ classDiagram
         +setPassword(String password) void
     }
 
-    LoginController --> LoginService : constructor injection
     LoginController ..> Login : binds form data
-    LoginService --> UserRepository : constructor injection
-    LoginService --> PasswordEncoder : constructor injection
+    SecurityConfig --> DatabaseUserDetailsService : configures authentication
+    SecurityConfig --> PasswordEncoder : creates BCrypt encoder
     RegistrationBusinessService --> UserRepository : constructor injection
     RegistrationBusinessService --> PasswordEncoder : encodes before save
     DatabaseUserDetailsService --> UserRepository : loads Basic auth user
     UserRepository --> UserEntity : persists and retrieves
-    LoginService ..> Login : validates credentials
 ```
 
 ## Relationship summary
 
-- `LoginController` is the presentation-layer Spring `@Controller`. It receives `LoginService` through constructor injection and retains validation, session management, redirects, and logout handling.
-- `LoginService` verifies form-login credentials with `PasswordEncoder.matches`; it contains no hardcoded credentials.
+- `LoginController` displays the custom login page; Spring Security processes submitted credentials and logout requests.
+- `SecurityConfig` protects routes, configures form login and HTTP Basic authentication, enforces CSRF on browser requests, and creates the BCrypt encoder.
 - `RegistrationBusinessService` checks uniqueness and stores only the BCrypt-encoded password.
-- `DatabaseUserDetailsService` adapts the same account data for Spring Security HTTP Basic authentication on `/service/**`.
+- `DatabaseUserDetailsService` supplies the same account data for browser form login and HTTP Basic authentication on `/service/**`.
 - `UserRepository` is a Spring Data JDBC `CrudRepository` backed by MySQL.
 - `UserEntity.password` contains the BCrypt hash despite retaining the existing database column/property name.
 - `Login` is the validated form model carrying the submitted username and password.

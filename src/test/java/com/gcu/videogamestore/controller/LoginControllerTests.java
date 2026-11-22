@@ -1,93 +1,47 @@
 package com.gcu.videogamestore.controller;
 
-import com.gcu.videogamestore.data.entity.UserEntity;
-import com.gcu.videogamestore.data.repository.UserRepository;
-import com.gcu.videogamestore.model.Login;
-import com.gcu.videogamestore.service.LoginService;
-import com.gcu.videogamestore.service.ProductService;
-
-import jakarta.servlet.http.HttpSession;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.ui.ExtendedModelMap;
-import org.springframework.validation.BeanPropertyBindingResult;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Tests the login controller with database-backed users.
- */
+import com.gcu.videogamestore.SecurityConfig;
+import com.gcu.videogamestore.data.entity.UserEntity;
+import com.gcu.videogamestore.data.repository.UserRepository;
+import com.gcu.videogamestore.service.DatabaseUserDetailsService;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+@WebMvcTest(LoginController.class)
+@Import({SecurityConfig.class, DatabaseUserDetailsService.class})
 class LoginControllerTests {
 
-    private final UserRepository userRepository =
-            mock(UserRepository.class);
+    @Autowired
+    private MockMvc mockMvc;
 
-    private final PasswordEncoder passwordEncoder =
-            new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    private final LoginController loginController =
-            new LoginController(new LoginService(userRepository, passwordEncoder));
+    @MockitoBean
+    private UserRepository userRepository;
 
-    private final ProductController productController =
-            new ProductController(mock(ProductService.class));
-
-    @Test
-    void validCredentialsCreateLoggedInSessionAndRedirectToProducts() {
-
-        Login credentials =
-                login("gameforge", "GameForge123");
-
-        BeanPropertyBindingResult bindingResult =
-                new BeanPropertyBindingResult(credentials, "login");
-
-        HttpSession session =
-                mock(HttpSession.class);
-
-        UserEntity user = new UserEntity(
-                "Test",
-                "User",
-                "test@email.com",
-                "5551234567",
-                "gameforge",
-                passwordEncoder.encode("GameForge123")
-        );
-
-        // Returns the stored user from the database
-        when(userRepository.findByUsername("gameforge"))
-                .thenReturn(java.util.Optional.of(user));
-
-        String view =
-                loginController.processLogin(
-                        credentials,
-                        bindingResult,
-                        session);
-
-        assertEquals("redirect:/products", view);
-
-        verify(session)
-                .setAttribute("loggedIn", true);
-
-        verify(session)
-                .setAttribute("username", "gameforge");
-    }
-
-    @Test
-    void invalidCredentialsReturnToLoginWithHelpfulError() {
-
-        Login credentials =
-                login("gameforge", "incorrect");
-
-        BeanPropertyBindingResult bindingResult =
-                new BeanPropertyBindingResult(credentials, "login");
-
+    @BeforeEach
+    void setUp() {
         UserEntity user = new UserEntity(
                 "Test",
                 "User",
@@ -98,57 +52,60 @@ class LoginControllerTests {
         );
 
         when(userRepository.findByUsername("gameforge"))
-                .thenReturn(java.util.Optional.of(user));
-
-        String view =
-                loginController.processLogin(
-                        credentials,
-                        bindingResult,
-                        mock(HttpSession.class));
-
-        assertEquals("login", view);
-
-        assertTrue(bindingResult.hasGlobalErrors());
-
-        assertNotNull(bindingResult.getGlobalError());
-
-        assertEquals(
-                "Invalid username or password. Please try again.",
-                bindingResult.getGlobalError().getDefaultMessage());
+                .thenReturn(Optional.of(user));
     }
 
     @Test
-    void productsRequireSuccessfulLogin() {
-
-        String view =
-                productController.showProducts(
-                        mock(HttpSession.class),
-                        new ExtendedModelMap());
-
-        assertEquals("redirect:/login", view);
+    void validCredentialsAuthenticateAndRedirectToProducts() throws Exception {
+        mockMvc.perform(post("/login")
+                    .with(csrf())
+                    .param("username", "gameforge")
+                    .param("password", "GameForge123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/products"))
+                .andExpect(authenticated().withUsername("gameforge"));
     }
 
     @Test
-    void logoutInvalidatesTheSession() {
-
-        HttpSession session =
-                mock(HttpSession.class);
-
-        String view =
-                loginController.logout(session);
-
-        assertEquals("redirect:/", view);
-
-        verify(session).invalidate();
+    void invalidCredentialsRedirectToLoginWithError() throws Exception {
+        mockMvc.perform(post("/login")
+                    .with(csrf())
+                    .param("username", "gameforge")
+                    .param("password", "incorrect"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?error"))
+                .andExpect(unauthenticated());
     }
 
-    private Login login(String username, String password) {
+    @Test
+    void logoutInvalidatesTheAuthenticatedSession() throws Exception {
+        MvcResult loginResult = mockMvc.perform(post("/login")
+                    .with(csrf())
+                    .param("username", "gameforge")
+                    .param("password", "GameForge123"))
+                .andExpect(authenticated().withUsername("gameforge"))
+                .andReturn();
 
-        Login login = new Login();
+        MockHttpSession session =
+                (MockHttpSession) loginResult.getRequest().getSession(false);
+        assertNotNull(session);
 
-        login.setUsername(username);
-        login.setPassword(password);
+        mockMvc.perform(post("/logout")
+                    .session(session)
+                    .accept(MediaType.TEXT_HTML)
+                    .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andExpect(unauthenticated());
 
-        return login;
+        assertTrue(session.isInvalid());
+    }
+
+    @Test
+    void loginWithoutCsrfTokenIsRejected() throws Exception {
+        mockMvc.perform(post("/login")
+                    .param("username", "gameforge")
+                    .param("password", "GameForge123"))
+                .andExpect(status().isForbidden());
     }
 }

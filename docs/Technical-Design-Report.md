@@ -9,7 +9,7 @@ GameForge is a Java 17 Spring Boot web application for managing and viewing a vi
 The application uses a layered design:
 
 1. **Presentation layer** — Spring MVC controllers and Thymeleaf templates handle home, registration, login, and product-management flows. `GameRestController` exposes catalog data to API clients.
-2. **Service/business layer** — `ProductService`, `LoginService`, and `RegistrationBusinessService` coordinate application rules.
+2. **Service/business layer** — `ProductService` and `RegistrationBusinessService` coordinate catalog and registration rules. Spring Security owns authentication processing.
 3. **Data layer** — `GameDataService` uses `JdbcTemplate` for catalog CRUD, while `UserRepository` uses Spring Data JDBC for account persistence.
 4. **Database layer** — MySQL stores users, games, platforms, and game-to-platform relationships.
 
@@ -27,11 +27,11 @@ Dependencies are supplied through constructor injection. `SpringConfigRegistrati
 ## Authentication and authorization
 
 - New account passwords are encoded with BCrypt before `UserEntity` is saved.
-- Browser login uses `LoginService` and `PasswordEncoder.matches`.
-- Successful browser login stores `loggedIn` and `username` in the HTTP session.
+- Spring Security processes browser login at `POST /login` and verifies passwords with the shared BCrypt `PasswordEncoder`.
+- Successful browser login uses Spring Security's authenticated session rather than custom session flags.
 - `/service/**` is protected by Spring Security HTTP Basic authentication.
-- `DatabaseUserDetailsService` supplies registered users to Spring Security.
-- Other routes remain publicly reachable at the Spring Security filter level; product controllers enforce the existing browser-session checks.
+- `DatabaseUserDetailsService` supplies registered users to Spring Security for both login mechanisms.
+- Registration, login, and static assets are public; all other application routes require authentication.
 - CSRF is ignored only for `/service/**`; normal MVC routes retain CSRF protection.
 
 Accounts created before BCrypt support contain incompatible plaintext values. Those users must reset their password or register again; there is no plaintext fallback.
